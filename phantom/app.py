@@ -14,6 +14,7 @@ from phantom.recorder import Recorder
 from phantom.transcriber import Transcriber
 from phantom.tray import TrayApp
 from phantom.ui.history_window import HistoryWindow
+from phantom.ui.settings_window import SettingsWindow
 
 logging.basicConfig(
     level=logging.INFO,
@@ -131,8 +132,17 @@ class PhantomApp:
         HistoryWindow(self._history).show()
 
     def _show_settings(self):
-        # Placeholder — will be implemented in Task 12
-        logger.info("Settings requested (not yet implemented)")
+        SettingsWindow(self._config, on_save=self._on_settings_saved).show()
+
+    def _on_settings_saved(self):
+        """Reload components after settings change."""
+        logger.info("Settings saved, reloading...")
+        self._hotkey_mgr.unregister_all()
+        self._register_hotkeys()
+        self._recorder = Recorder(device=self._config.mic_device)
+        # Note: model reload is expensive — only do it if model_size changed
+        # For now, notify user to restart for model changes
+        self._tray.notify("Settings saved. Restart for model changes.")
 
     def _shutdown(self):
         logger.info("Shutting down...")
