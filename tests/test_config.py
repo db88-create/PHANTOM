@@ -43,3 +43,8 @@ def test_handles_corrupted_config(config_dir):
     cfg = Config(config_dir)
     # Falls back to defaults
     assert cfg.model_size == "base"
+
+
+def test_default_config_has_transcript_hotkey(config_dir):
+    cfg = Config(config_dir)
+    assert cfg.hotkey_transcript == "ctrl+shift+t"

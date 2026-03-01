@@ -6,6 +6,7 @@ DEFAULTS = {
     "mic_device": None,
     "hotkey_paste": "ctrl+shift+v",
     "hotkey_notes": "ctrl+shift+n",
+    "hotkey_transcript": "ctrl+shift+t",
 }
 
 
@@ -32,6 +33,7 @@ class Config:
             "mic_device": self.mic_device,
             "hotkey_paste": self.hotkey_paste,
             "hotkey_notes": self.hotkey_notes,
+            "hotkey_transcript": self.hotkey_transcript,
         }
         self._config_path.write_text(
             json.dumps(payload, indent=2), encoding="utf-8"
@@ -68,3 +70,11 @@ class Config:
     @hotkey_notes.setter
     def hotkey_notes(self, value: str):
         self._data["hotkey_notes"] = value
+
+    @property
+    def hotkey_transcript(self) -> str:
+        return self._data.get("hotkey_transcript", DEFAULTS["hotkey_transcript"])
+
+    @hotkey_transcript.setter
+    def hotkey_transcript(self, value: str):
+        self._data["hotkey_transcript"] = value
