@@ -1,25 +1,32 @@
+from pathlib import Path
+
 from PIL import Image, ImageDraw
 import pystray
+
+_ICON_PATH = Path(__file__).parent.parent / "phantom_tray.png"
 
 
 def create_icon_image(recording: bool = False) -> Image.Image:
     size = 64
-    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
+
+    # Load custom logo if available
+    if _ICON_PATH.exists():
+        img = Image.open(_ICON_PATH).resize((size, size), Image.LANCZOS).convert("RGBA")
+    else:
+        img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(img)
+        draw.ellipse([8, 8, size - 8, size - 8], fill=(160, 160, 160, 255))
+        center = size // 2
+        r = 6
+        draw.ellipse(
+            [center - r, center - r, center + r, center + r], fill=(255, 255, 255, 255)
+        )
 
     if recording:
-        # Red circle when recording
-        draw.ellipse([8, 8, size - 8, size - 8], fill=(220, 50, 50, 255))
-    else:
-        # Grey circle when idle
-        draw.ellipse([8, 8, size - 8, size - 8], fill=(160, 160, 160, 255))
+        # Add red recording dot in bottom-right corner
+        draw = ImageDraw.Draw(img)
+        draw.ellipse([size - 22, size - 22, size - 4, size - 4], fill=(220, 50, 50, 255))
 
-    # Inner "P" shape suggestion — small white dot
-    center = size // 2
-    r = 6
-    draw.ellipse(
-        [center - r, center - r, center + r, center + r], fill=(255, 255, 255, 255)
-    )
     return img
 
 
