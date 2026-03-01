@@ -1,0 +1,8 @@
+[project]
+name = "phantom"
+version = "0.1.0"
+description = "Personal Voice-to-Text Engine for Windows"
+requires-python = ">=3.11"
+
+[project.scripts]
+phantom = "phantom.app:main"
