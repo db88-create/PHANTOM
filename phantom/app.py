@@ -13,6 +13,7 @@ from phantom.notes import append_note
 from phantom.recorder import Recorder
 from phantom.transcriber import Transcriber
 from phantom.tray import TrayApp
+from phantom.ui.history_window import HistoryWindow
 
 logging.basicConfig(
     level=logging.INFO,
@@ -127,8 +128,7 @@ class PhantomApp:
         history.add(text, mode)
 
     def _show_history(self):
-        # Placeholder — will be implemented in Task 11
-        logger.info("History requested (not yet implemented)")
+        HistoryWindow(self._history).show()
 
     def _show_settings(self):
         # Placeholder — will be implemented in Task 12
