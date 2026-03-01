@@ -23,14 +23,18 @@ class Recorder:
     def start(self):
         self._chunks = []
         self._recording = True
-        self._stream = sd.InputStream(
-            samplerate=SAMPLE_RATE,
-            channels=1,
-            dtype="float32",
-            device=self._device,
-            callback=self._audio_callback,
-        )
-        self._stream.start()
+        try:
+            self._stream = sd.InputStream(
+                samplerate=SAMPLE_RATE,
+                channels=1,
+                dtype="float32",
+                device=self._device,
+                callback=self._audio_callback,
+            )
+            self._stream.start()
+        except sd.PortAudioError:
+            self._recording = False
+            raise
 
     def stop(self) -> np.ndarray | None:
         if not self._recording:

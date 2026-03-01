@@ -36,8 +36,13 @@ class PhantomApp:
         self._work_queue = getattr(self, "_work_queue", queue.Queue())
 
         self._recorder = Recorder(device=self._config.mic_device)
-        self._transcriber = Transcriber(model_size=self._config.model_size)
         self._hotkey_mgr = HotkeyManager()
+
+        try:
+            self._transcriber = Transcriber(model_size=self._config.model_size)
+        except Exception:
+            logger.exception("Failed to load Whisper model")
+            self._transcriber = None
 
         self._tray = TrayApp(
             callbacks={
@@ -63,6 +68,10 @@ class PhantomApp:
         )
 
     def _toggle_recording(self, mode: str):
+        if self._transcriber is None:
+            self._tray.notify("Whisper model not loaded")
+            return
+
         if self._recorder.is_recording:
             # Stop recording
             logger.info("Stopping recording (mode=%s)", self._current_mode)
