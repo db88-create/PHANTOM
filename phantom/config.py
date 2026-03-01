@@ -4,9 +4,9 @@ from pathlib import Path
 DEFAULTS = {
     "model_size": "base",
     "mic_device": None,
-    "hotkey_paste": "ctrl+shift+v",
-    "hotkey_notes": "ctrl+shift+n",
-    "hotkey_transcript": "ctrl+shift+t",
+    "hotkey_paste": "ctrl+`",
+    "hotkey_notes": "ctrl+1",
+    "hotkey_transcript": "ctrl+2",
 }
 
 

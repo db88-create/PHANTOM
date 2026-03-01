@@ -49,9 +49,9 @@ PHANTOM starts in the system tray. Use hotkeys to control it:
 
 | Hotkey | Action |
 |--------|--------|
-| `Ctrl + Shift + V` | Toggle paste-mode recording |
-| `Ctrl + Shift + N` | Toggle notes-mode recording |
-| `Ctrl + Shift + T` | Toggle transcript viewer |
+| `Ctrl + `` | Toggle paste-mode recording |
+| `Ctrl + 1` | Toggle notes-mode recording |
+| `Ctrl + 2` | Toggle transcript viewer |
 
 Hotkeys are fully configurable in **Settings** (right-click the tray icon).
 
@@ -63,9 +63,9 @@ Settings are stored in `~/phantom/config.json`:
 {
   "model_size": "base",
   "mic_device": null,
-  "hotkey_paste": "ctrl+shift+v",
-  "hotkey_notes": "ctrl+shift+n",
-  "hotkey_transcript": "ctrl+shift+t"
+  "hotkey_paste": "ctrl+`",
+  "hotkey_notes": "ctrl+1",
+  "hotkey_transcript": "ctrl+2"
 }
 ```
 
