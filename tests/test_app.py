@@ -78,3 +78,29 @@ def test_process_notes_mode(mock_transcriber_cls, mock_append):
 
     mock_append.assert_called_once_with("Buy groceries", notes_path)
     mock_history.add.assert_called_once_with("Buy groceries", "notes")
+
+
+@patch("phantom.app.paste_text")
+@patch("phantom.app.Transcriber")
+def test_process_paste_mode_notifies_viewer(mock_transcriber_cls, mock_paste):
+    from phantom.app import PhantomApp
+
+    mock_history = MagicMock()
+    mock_tray = MagicMock()
+    mock_viewer = MagicMock()
+
+    PhantomApp._process_audio_static(
+        audio=None,
+        mode="paste",
+        transcriber=None,
+        history=mock_history,
+        tray=mock_tray,
+        notes_path=None,
+        text="Hello viewer",
+        transcript_viewer=mock_viewer,
+    )
+
+    mock_paste.assert_called_once_with("Hello viewer")
+    mock_viewer.add_entry.assert_called_once()
+    call_args = mock_viewer.add_entry.call_args
+    assert call_args[0][0] == "Hello viewer"

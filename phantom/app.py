@@ -15,6 +15,7 @@ from phantom.transcriber import Transcriber
 from phantom.tray import TrayApp
 from phantom.ui.history_window import HistoryWindow
 from phantom.ui.settings_window import SettingsWindow
+from phantom.ui.transcript_viewer import TranscriptViewer
 
 logging.basicConfig(
     level=logging.INFO,
@@ -44,9 +45,12 @@ class PhantomApp:
             logger.exception("Failed to load Whisper model")
             self._transcriber = None
 
+        self._transcript_viewer = TranscriptViewer(self._history)
+
         self._tray = TrayApp(
             callbacks={
                 "on_quit": self._shutdown,
+                "on_transcripts": self._toggle_transcripts,
                 "on_history": self._show_history,
                 "on_settings": self._show_settings,
             }
@@ -61,10 +65,14 @@ class PhantomApp:
         self._hotkey_mgr.register(
             self._config.hotkey_notes, lambda: self._toggle_recording("notes")
         )
+        self._hotkey_mgr.register(
+            self._config.hotkey_transcript, self._toggle_transcripts
+        )
         logger.info(
-            "Hotkeys registered: paste=%s, notes=%s",
+            "Hotkeys registered: paste=%s, notes=%s, transcripts=%s",
             self._config.hotkey_paste,
             self._config.hotkey_notes,
+            self._config.hotkey_transcript,
         )
 
     def _toggle_recording(self, mode: str):
@@ -114,6 +122,7 @@ class PhantomApp:
                     tray=self._tray,
                     notes_path=self._config.data_dir / "notes.md",
                     text=text,
+                    transcript_viewer=self._transcript_viewer,
                 )
             except Exception:
                 logger.exception("Transcription failed")
@@ -121,7 +130,7 @@ class PhantomApp:
 
     @staticmethod
     def _process_audio_static(
-        audio, mode, transcriber, history, tray, notes_path, text=None
+        audio, mode, transcriber, history, tray, notes_path, text=None, transcript_viewer=None
     ):
         """Process transcribed audio. Static for testability."""
         if text is None:
@@ -132,10 +141,17 @@ class PhantomApp:
 
         if mode == "paste":
             paste_text(text)
+            if transcript_viewer is not None:
+                from datetime import datetime
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                transcript_viewer.add_entry(text, timestamp)
         elif mode == "notes":
             append_note(text, notes_path)
 
         history.add(text, mode)
+
+    def _toggle_transcripts(self):
+        self._transcript_viewer.toggle()
 
     def _show_history(self):
         HistoryWindow(self._history).show()
@@ -159,6 +175,9 @@ class PhantomApp:
         self._tray.stop()
 
     def run(self):
+        # Start transcript viewer (hidden by default)
+        self._transcript_viewer.start()
+
         # Start transcription worker thread
         worker = threading.Thread(target=self._transcription_worker, daemon=True)
         worker.start()
