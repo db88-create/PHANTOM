@@ -25,3 +25,16 @@ def test_tray_app_creation(mock_pystray):
     callbacks = {"on_quit": MagicMock(), "on_history": MagicMock(), "on_settings": MagicMock()}
     tray = TrayApp(callbacks)
     assert tray is not None
+
+
+@patch("phantom.tray.pystray")
+def test_tray_app_has_transcripts_callback(mock_pystray):
+    callbacks = {
+        "on_quit": MagicMock(),
+        "on_history": MagicMock(),
+        "on_settings": MagicMock(),
+        "on_transcripts": MagicMock(),
+    }
+    tray = TrayApp(callbacks)
+    tray._on_transcripts(MagicMock(), MagicMock())
+    callbacks["on_transcripts"].assert_called_once()

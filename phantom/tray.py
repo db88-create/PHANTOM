@@ -31,12 +31,18 @@ class TrayApp:
             icon=create_icon_image(recording=False),
             title="PHANTOM - Voice to Text",
             menu=pystray.Menu(
+                pystray.MenuItem("Transcripts", self._on_transcripts),
                 pystray.MenuItem("History", self._on_history),
                 pystray.MenuItem("Settings", self._on_settings),
                 pystray.Menu.SEPARATOR,
                 pystray.MenuItem("Quit", self._on_quit),
             ),
         )
+
+    def _on_transcripts(self, icon, item):
+        cb = self._callbacks.get("on_transcripts")
+        if cb:
+            cb()
 
     def _on_history(self, icon, item):
         cb = self._callbacks.get("on_history")
