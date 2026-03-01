@@ -49,3 +49,32 @@ def test_process_paste_mode(mock_transcriber_cls, mock_paste):
 
     mock_paste.assert_called_once_with("Hello world")
     mock_history.add.assert_called_once_with("Hello world", "paste")
+
+
+@patch("phantom.app.append_note")
+@patch("phantom.app.Transcriber")
+def test_process_notes_mode(mock_transcriber_cls, mock_append):
+    from phantom.app import PhantomApp
+
+    mock_transcriber = MagicMock()
+    mock_transcriber.transcribe.return_value = "Buy groceries"
+    mock_transcriber_cls.return_value = mock_transcriber
+
+    mock_history = MagicMock()
+    mock_tray = MagicMock()
+
+    from pathlib import Path
+    notes_path = Path("/tmp/notes.md")
+
+    PhantomApp._process_audio_static(
+        audio=None,
+        mode="notes",
+        transcriber=None,
+        history=mock_history,
+        tray=mock_tray,
+        notes_path=notes_path,
+        text="Buy groceries",
+    )
+
+    mock_append.assert_called_once_with("Buy groceries", notes_path)
+    mock_history.add.assert_called_once_with("Buy groceries", "notes")
